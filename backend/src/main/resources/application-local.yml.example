@@ -1,0 +1,8 @@
+# Copy this file to application-local.yml (git-ignored) and fill in your real local values.
+# Activate with: SPRING_PROFILES_ACTIVE=dev,local
+
+DB_USERNAME: exhibitor_app
+DB_PASSWORD: changeme
+
+# Used later for JWT signing once auth is implemented (Phase 3) — generate a long random secret.
+JWT_SECRET: changeme
