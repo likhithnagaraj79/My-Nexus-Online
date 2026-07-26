@@ -47,6 +47,9 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_PATHS).permitAll()
+                        // Read-only event/day discovery shared by every authenticated role
+                        // (Crew/Organiser/Validator otherwise have no way to look up an eventId).
+                        .requestMatchers("/api/common/**").authenticated()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // Shared with Admin (spec: "visible to Organiser and Admin too") — role choice
                         // is enforced by @PreAuthorize on the controller method, not the URL rule below.

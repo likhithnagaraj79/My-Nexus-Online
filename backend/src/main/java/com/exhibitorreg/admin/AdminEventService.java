@@ -37,6 +37,13 @@ public class AdminEventService {
         return eventRepository.findAll().stream().map(EventResponse::from).toList();
     }
 
+    @Transactional(readOnly = true)
+    public EventResponse getActiveEvent() {
+        return eventRepository.findByActiveTrue()
+                .map(EventResponse::from)
+                .orElseThrow(() -> new NotFoundException("No active event is configured."));
+    }
+
     /** Activating an event auto-deactivates whichever one was previously active — at most one event is active at a time. */
     @Transactional
     public EventResponse activate(UUID eventId) {

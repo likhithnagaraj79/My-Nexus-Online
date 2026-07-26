@@ -90,6 +90,23 @@ class AdminEventServiceTest {
     }
 
     @Test
+    void getActiveEventReturnsTheActiveOne() {
+        Event active = eventWithId(true);
+        when(eventRepository.findByActiveTrue()).thenReturn(Optional.of(active));
+
+        var response = service.getActiveEvent();
+
+        assertThat(response.id()).isEqualTo(active.getId());
+    }
+
+    @Test
+    void getActiveEventThrowsNotFoundWhenNoneActive() {
+        when(eventRepository.findByActiveTrue()).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.getActiveEvent()).isInstanceOf(NotFoundException.class);
+    }
+
+    @Test
     void deactivateSetsFlagFalse() {
         Event event = eventWithId(true);
         when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
