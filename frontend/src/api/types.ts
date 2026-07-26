@@ -13,7 +13,9 @@ export interface ProblemDetails {
 
 export interface PagedModel<T> {
   content: T[]
-  metadata: {
+  // Matches Spring Data's org.springframework.data.web.PagedModel JSON shape (a "page" key,
+  // not "metadata" — confirmed against a live response).
+  page: {
     size: number
     number: number
     totalElements: number

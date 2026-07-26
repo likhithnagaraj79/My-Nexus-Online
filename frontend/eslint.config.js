@@ -40,5 +40,15 @@ export default [
       'react/react-in-jsx-scope': 'off',
     },
   },
+  {
+    // Playwright specs/helpers and the reset script run under Node, not the browser — need
+    // process/Buffer/console etc, unlike the rest of the app's browser-only source.
+    files: ['e2e/**/*.{ts,mjs}', 'playwright.config.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
   prettierConfig,
 ]

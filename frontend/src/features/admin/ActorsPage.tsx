@@ -180,7 +180,7 @@ export default function ActorsPage() {
             columns={columns}
             loading={query.isLoading}
             paginationMode="server"
-            rowCount={query.data?.metadata.totalElements ?? 0}
+            rowCount={query.data?.page.totalElements ?? 0}
             paginationModel={{ page, pageSize: PAGE_SIZE }}
             onPaginationModelChange={(model) => setPage(model.page)}
             pageSizeOptions={[PAGE_SIZE]}

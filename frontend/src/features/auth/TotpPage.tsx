@@ -17,7 +17,7 @@ type FormValues = z.infer<typeof schema>
 
 export default function TotpPage() {
   const navigate = useNavigate()
-  const { pendingTotpTicket, role, setTokens } = useAuthStore()
+  const { pendingTotpTicket, role, accessToken, setTokens } = useAuthStore()
 
   const {
     control,
@@ -35,7 +35,11 @@ export default function TotpPage() {
     },
   })
 
-  if (!pendingTotpTicket) {
+  // setTokens() (below, on a successful verify) clears pendingTotpTicket as part of the same
+  // update that populates accessToken — without the `&& !accessToken` check, that state change
+  // re-renders this component and hits this guard before the intended navigate() below takes
+  // effect, bouncing a just-succeeded login back to /login instead of /change-password.
+  if (!pendingTotpTicket && !accessToken) {
     return <Navigate to="/login" replace />
   }
 

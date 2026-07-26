@@ -12,6 +12,9 @@ export default defineConfig(({ command }) => ({
   test: {
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
+    // Playwright owns e2e/**; Vitest's default include glob would otherwise also match its
+    // *.spec.ts files and try (and fail) to run them under jsdom.
+    exclude: ['e2e/**', 'node_modules/**'],
     env: {
       VITE_API_BASE_URL: 'https://localhost:8443',
       VITE_RECAPTCHA_SITE_KEY: '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI',

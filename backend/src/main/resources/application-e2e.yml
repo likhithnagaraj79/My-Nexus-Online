@@ -1,0 +1,12 @@
+# Activate as SPRING_PROFILES_ACTIVE=dev,local,e2e — layered on top of dev,local so HTTPS,
+# CORS, JWT secret, and recaptcha.enabled=false are all inherited. Only the datasource and
+# admin bootstrap credentials differ, keeping this profile's data isolated from the manually
+# used dev database. See README for the one-time `createdb exhibitor_registration_e2e` step.
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/exhibitor_registration_e2e
+
+app:
+  admin-bootstrap:
+    username: e2e-admin
+    password: E2eBootstrap123!

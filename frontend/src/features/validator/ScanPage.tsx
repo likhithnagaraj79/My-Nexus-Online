@@ -73,7 +73,12 @@ export default function ScanPage() {
 
     return () => {
       scannerRef.current = null
-      scanner.stop().catch(() => undefined)
+      // start() can still be in flight (or have failed, e.g. no camera) when this runs — stop()
+      // throws synchronously (not just a rejected promise) if the scanner never reached a
+      // running/paused state, so guard on isScanning rather than relying on .catch() alone.
+      if (scanner.isScanning) {
+        scanner.stop().catch(() => undefined)
+      }
     }
   }, [scanning, eventDayId])
 

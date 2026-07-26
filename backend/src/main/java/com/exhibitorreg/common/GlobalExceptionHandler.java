@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -65,6 +66,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BusinessRuleViolationException.class)
     public ProblemDetail handleBusinessRuleViolation(BusinessRuleViolationException ex) {
         return problem(HttpStatus.UNPROCESSABLE_CONTENT, "BUSINESS_RULE_VIOLATION", ex.getMessage());
+    }
+
+    /** {@code @PreAuthorize} denials throw this (distinct from the filter-chain-level
+     * {@code AccessDeniedException} already handled by SecurityConfig's accessDeniedHandler) —
+     * without this handler they fall through to the generic 500 below instead of a 403. */
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ProblemDetail handleAuthorizationDenied(AuthorizationDeniedException ex) {
+        return problem(HttpStatus.FORBIDDEN, "FORBIDDEN", "You do not have permission to access this resource.");
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
