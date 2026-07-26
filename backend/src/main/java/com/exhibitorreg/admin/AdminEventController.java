@@ -1,6 +1,5 @@
 package com.exhibitorreg.admin;
 
-import com.exhibitorreg.admin.dto.CreateEventDayRequest;
 import com.exhibitorreg.admin.dto.CreateEventRequest;
 import com.exhibitorreg.admin.dto.EventDayResponse;
 import com.exhibitorreg.admin.dto.EventResponse;
@@ -45,12 +44,6 @@ public class AdminEventController {
     @PostMapping("/{id}/deactivate")
     public EventResponse deactivate(@PathVariable UUID id) {
         return adminEventService.deactivate(id);
-    }
-
-    @PostMapping("/{id}/days")
-    @ResponseStatus(HttpStatus.CREATED)
-    public EventDayResponse createEventDay(@PathVariable UUID id, @Valid @RequestBody CreateEventDayRequest request) {
-        return adminEventService.createEventDay(id, request);
     }
 
     @GetMapping("/{id}/days")

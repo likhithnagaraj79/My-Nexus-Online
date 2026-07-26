@@ -3,18 +3,20 @@ package com.exhibitorreg.admin;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.exhibitorreg.admin.dto.CreateEventDayRequest;
-import com.exhibitorreg.common.exception.BusinessRuleViolationException;
+import com.exhibitorreg.admin.dto.CreateEventRequest;
 import com.exhibitorreg.common.exception.NotFoundException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -117,23 +119,15 @@ class AdminEventServiceTest {
     }
 
     @Test
-    void eventDayOutsideEventRangeIsRejected() {
-        Event event = eventWithId(true);
-        when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
+    void creatingAnEventAutoCreatesExactlyThreeDaysNumbered1To3() {
+        var request = new CreateEventRequest("Expo", LocalDate.of(2026, 8, 1), LocalDate.of(2026, 8, 3));
 
-        assertThatThrownBy(() -> service.createEventDay(
-                        event.getId(), new CreateEventDayRequest(1, LocalDate.of(2026, 9, 1))))
-                .isInstanceOf(BusinessRuleViolationException.class);
-    }
+        service.createEvent(request);
 
-    @Test
-    void eventDayWithinRangeIsAccepted() {
-        Event event = eventWithId(true);
-        when(eventRepository.findById(event.getId())).thenReturn(Optional.of(event));
-
-        var response = service.createEventDay(event.getId(), new CreateEventDayRequest(1, LocalDate.of(2026, 8, 2)));
-
-        assertThat(response.dayNumber()).isEqualTo(1);
-        assertThat(response.date()).isEqualTo(LocalDate.of(2026, 8, 2));
+        ArgumentCaptor<EventDay> dayCaptor = ArgumentCaptor.forClass(EventDay.class);
+        verify(eventDayRepository, times(3)).save(dayCaptor.capture());
+        List<Integer> dayNumbers = dayCaptor.getAllValues().stream().map(EventDay::getDayNumber).toList();
+        assertThat(dayNumbers).containsExactly(1, 2, 3);
+        assertThat(dayCaptor.getAllValues()).allMatch(day -> day.getDate() == null);
     }
 }

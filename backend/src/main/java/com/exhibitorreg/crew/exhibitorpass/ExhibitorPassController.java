@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -28,7 +29,11 @@ public class ExhibitorPassController {
         this.exhibitorPassService = exhibitorPassService;
     }
 
+    /** Visible to Crew (owning role), Organiser, and Admin ("all exhibitor submitted details
+     * visible to Organiser") — the URL rule for this path is only `authenticated()` in
+     * SecurityConfig; the actual role restriction is enforced here. */
     @GetMapping
+    @PreAuthorize("hasAnyRole('CREW','ORGANISER','ADMIN')")
     public List<ExhibitorPassSummary> list(
             @RequestParam(required = false) UUID companyId,
             @RequestParam(required = false) Boolean printed,

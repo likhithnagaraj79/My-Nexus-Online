@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CheckInExportController {
 
     private static final CSVFormat CSV_FORMAT = CSVFormat.DEFAULT.builder()
-            .setHeader("personName", "designation", "companyName", "eventDayDate", "validatorUsername", "scannedAt")
+            .setHeader("personName", "designation", "companyName", "eventDay", "validatorUsername", "scannedAt")
             .get();
 
     private final CheckInScanRepository checkInScanRepository;
@@ -39,7 +39,7 @@ public class CheckInExportController {
                         scan.getExhibitorPerson().getName(),
                         scan.getExhibitorPerson().getDesignation(),
                         scan.getExhibitorPerson().getCompany().getName(),
-                        scan.getEventDay().getDate(),
+                        "Day " + scan.getEventDay().getDayNumber(),
                         scan.getValidator().getUsername(),
                         scan.getCreatedAt());
             }

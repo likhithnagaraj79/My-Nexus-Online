@@ -46,12 +46,6 @@ export interface CreateEventRequest {
 export interface EventDayDto {
   id: string
   dayNumber: number
-  date: string
-}
-
-export interface CreateEventDayRequest {
-  dayNumber: number
-  date: string
 }
 
 export type AuditEventType =
@@ -111,9 +105,6 @@ export const activateEvent = (id: string) =>
 
 export const deactivateEvent = (id: string) =>
   apiClient.post<EventDto>(`/api/admin/events/${id}/deactivate`).then((r) => r.data)
-
-export const createEventDay = (eventId: string, body: CreateEventDayRequest) =>
-  apiClient.post<EventDayDto>(`/api/admin/events/${eventId}/days`, body).then((r) => r.data)
 
 export const listEventDays = (eventId: string) =>
   apiClient.get<EventDayDto[]>(`/api/admin/events/${eventId}/days`).then((r) => r.data)

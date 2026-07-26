@@ -5,6 +5,7 @@ import com.exhibitorreg.auth.JwtService;
 import com.exhibitorreg.common.web.ProblemDetailResponseWriter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -55,6 +56,10 @@ public class SecurityConfig {
                         // is enforced by @PreAuthorize on the controller method, not the URL rule below.
                         .requestMatchers("/api/organiser/labour-passes").authenticated()
                         .requestMatchers("/api/organiser/**").hasRole("ORGANISER")
+                        // Shared with Organiser/Admin ("all exhibitor submitted details visible to
+                        // Organiser") — only the read-only list, not print/issue — role choice is
+                        // enforced by @PreAuthorize on the controller method, not this URL rule.
+                        .requestMatchers(HttpMethod.GET, "/api/crew/exhibitor-passes").authenticated()
                         .requestMatchers("/api/crew/**").hasRole("CREW")
                         .requestMatchers("/api/validator/**").hasRole("VALIDATOR")
                         .requestMatchers("/api/auth/**").authenticated()

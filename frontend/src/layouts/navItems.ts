@@ -7,6 +7,7 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import HistoryIcon from '@mui/icons-material/History'
 import LinkIcon from '@mui/icons-material/Link'
 import PeopleIcon from '@mui/icons-material/People'
+import ContactPageIcon from '@mui/icons-material/ContactPage'
 import QrCode2Icon from '@mui/icons-material/QrCode2'
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner'
 import type { SvgIconComponent } from '@mui/icons-material'
@@ -29,6 +30,7 @@ export const NAV_ITEMS: Record<Role, NavItem[]> = {
   ORGANISER: [
     { label: 'Dashboard', path: '/organiser/dashboard', icon: DashboardIcon },
     { label: 'Analytics', path: '/organiser/analytics', icon: AnalyticsIcon },
+    { label: 'Exhibitor Submissions', path: '/organiser/exhibitor-submissions', icon: ContactPageIcon },
     { label: 'Labour Passes', path: '/organiser/labour-passes', icon: BadgeIcon },
     { label: 'Check-ins', path: '/organiser/check-ins', icon: FileDownloadIcon },
     { label: 'Registration Links', path: '/organiser/links', icon: LinkIcon },

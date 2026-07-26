@@ -97,11 +97,11 @@ test.describe.serial('golden path', () => {
     // — a more precise signal than matching "Active" text, which also substring-matches "Inactive".
     await expect(page.getByRole('button', { name: /activate/i })).toBeDisabled()
 
+    // Day 1/2/3 are auto-created the moment the event is created — nothing to add manually.
     await page.getByRole('button', { name: /manage days/i }).click()
-    await page.getByLabel('Day #').fill('1')
-    await page.getByLabel('Date').fill('2026-08-01')
-    await page.getByRole('button', { name: /^add$/i }).click()
     await expect(page.getByText('Day 1')).toBeVisible()
+    await expect(page.getByText('Day 2')).toBeVisible()
+    await expect(page.getByText('Day 3')).toBeVisible()
     await page.getByRole('button', { name: /^close$/i }).click()
   })
 
@@ -246,6 +246,16 @@ test.describe.serial('golden path', () => {
 
     expect(csv).toContain('E2E Jane Doe')
     expect(csv).toContain('E2E Acme Corp')
+  })
+
+  test('organiser can view the exhibitor submission Crew already printed and issued', async () => {
+    await page.goto('/organiser/exhibitor-submissions')
+    await expect(page.getByRole('heading', { name: 'Exhibitor Submissions' })).toBeVisible()
+
+    const row = page.locator('[role="row"]').filter({ hasText: 'E2E Jane Doe' })
+    await expect(row).toBeVisible()
+    await expect(row.getByText('Printed')).toBeVisible()
+    await expect(row.getByText('Issued')).toBeVisible()
   })
 })
 

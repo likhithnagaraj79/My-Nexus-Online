@@ -25,6 +25,8 @@ public class EventDay extends Auditable {
     @Column(name = "day_number", nullable = false)
     private int dayNumber;
 
-    @Column(nullable = false)
+    /** No longer required — days are auto-created as Day 1/2/3 with their Event, with no
+     * calendar date attached. Kept (nullable) rather than dropped so historical rows in an
+     * already-deployed database still read back their original date. */
     private LocalDate date;
 }

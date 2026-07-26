@@ -1,10 +1,8 @@
 package com.exhibitorreg.admin;
 
-import com.exhibitorreg.admin.dto.CreateEventDayRequest;
 import com.exhibitorreg.admin.dto.CreateEventRequest;
 import com.exhibitorreg.admin.dto.EventDayResponse;
 import com.exhibitorreg.admin.dto.EventResponse;
-import com.exhibitorreg.common.exception.BusinessRuleViolationException;
 import com.exhibitorreg.common.exception.NotFoundException;
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AdminEventService {
 
+    private static final int AUTO_CREATED_DAY_COUNT = 3;
+
     private final EventRepository eventRepository;
     private final EventDayRepository eventDayRepository;
 
@@ -22,6 +22,8 @@ public class AdminEventService {
         this.eventDayRepository = eventDayRepository;
     }
 
+    /** Every event gets exactly Day 1/2/3 automatically — no calendar date, no separate Admin
+     * step. The only consumer of a day's id (Validator check-in scans) never reads a date. */
     @Transactional
     public EventResponse createEvent(CreateEventRequest request) {
         Event event = new Event();
@@ -29,6 +31,14 @@ public class AdminEventService {
         event.setStartDate(request.startDate());
         event.setEndDate(request.endDate());
         eventRepository.save(event);
+
+        for (int dayNumber = 1; dayNumber <= AUTO_CREATED_DAY_COUNT; dayNumber++) {
+            EventDay day = new EventDay();
+            day.setEvent(event);
+            day.setDayNumber(dayNumber);
+            eventDayRepository.save(day);
+        }
+
         return EventResponse.from(event);
     }
 
@@ -67,22 +77,6 @@ public class AdminEventService {
         event.setActive(false);
         eventRepository.save(event);
         return EventResponse.from(event);
-    }
-
-    @Transactional
-    public EventDayResponse createEventDay(UUID eventId, CreateEventDayRequest request) {
-        Event event = getOrThrow(eventId);
-
-        if (request.date().isBefore(event.getStartDate()) || request.date().isAfter(event.getEndDate())) {
-            throw new BusinessRuleViolationException("Event day date must fall within the event's start and end dates.");
-        }
-
-        EventDay day = new EventDay();
-        day.setEvent(event);
-        day.setDayNumber(request.dayNumber());
-        day.setDate(request.date());
-        eventDayRepository.saveAndFlush(day);
-        return EventDayResponse.from(day);
     }
 
     @Transactional(readOnly = true)

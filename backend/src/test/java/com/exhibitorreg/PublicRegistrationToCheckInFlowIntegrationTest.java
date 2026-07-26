@@ -73,7 +73,7 @@ class PublicRegistrationToCheckInFlowIntegrationTest {
         String crewToken = tokenFor(crew);
         String validatorToken = tokenFor(validator);
 
-        // Admin: create + activate event, add a day
+        // Admin: create + activate event — Day 1/2/3 are auto-created with the event.
         String eventResponse = mockMvc.perform(post("/api/admin/events")
                         .header("Authorization", "Bearer " + adminToken)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -86,13 +86,11 @@ class PublicRegistrationToCheckInFlowIntegrationTest {
                         .header("Authorization", "Bearer " + adminToken))
                 .andExpect(status().isOk());
 
-        String eventDayResponse = mockMvc.perform(post("/api/admin/events/" + eventId + "/days")
-                        .header("Authorization", "Bearer " + adminToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"dayNumber\":1,\"date\":\"2026-08-01\"}"))
-                .andExpect(status().isCreated())
+        String eventDaysResponse = mockMvc.perform(get("/api/admin/events/" + eventId + "/days")
+                        .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
-        String eventDayId = JsonPath.read(eventDayResponse, "$.id");
+        String eventDayId = JsonPath.read(eventDaysResponse, "$[0].id");
 
         // Organiser: generate public link
         String linkResponse = mockMvc.perform(post("/api/organiser/links")

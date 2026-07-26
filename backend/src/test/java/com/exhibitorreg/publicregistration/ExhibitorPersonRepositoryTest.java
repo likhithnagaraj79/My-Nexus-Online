@@ -58,7 +58,6 @@ class ExhibitorPersonRepositoryTest {
         EventDay eventDay = new EventDay();
         eventDay.setEvent(event);
         eventDay.setDayNumber(1);
-        eventDay.setDate(event.getStartDate());
         eventDayRepository.saveAndFlush(eventDay);
 
         User organiser = new User();

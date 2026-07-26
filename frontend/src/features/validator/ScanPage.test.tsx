@@ -36,7 +36,7 @@ describe('ScanPage', () => {
         HttpResponse.json({ id: 'event-1', name: 'Expo 2026', startDate: '2026-08-01', endDate: '2026-08-03', active: true }),
       ),
       http.get(`${BASE_URL}/api/validator/event-days`, () =>
-        HttpResponse.json([{ id: 'day-1', dayNumber: 1, date: '2026-08-01' }]),
+        HttpResponse.json([{ id: 'day-1', dayNumber: 1 }]),
       ),
       http.post(`${BASE_URL}/api/validator/scans`, () =>
         HttpResponse.json({

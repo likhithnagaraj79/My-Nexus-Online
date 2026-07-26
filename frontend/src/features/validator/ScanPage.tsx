@@ -107,7 +107,7 @@ export default function ScanPage() {
           >
             {(daysQuery.data ?? []).map((day) => (
               <MenuItem key={day.id} value={day.id}>
-                Day {day.dayNumber} — {day.date}
+                Day {day.dayNumber}
               </MenuItem>
             ))}
           </TextField>

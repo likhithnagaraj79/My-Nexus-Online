@@ -14,6 +14,7 @@ import NotFoundPage from '../features/shared/NotFoundPage'
 import LabourPassesTable from '../features/shared/LabourPassesTable'
 import DashboardPage from '../features/organiser/DashboardPage'
 import AnalyticsPage from '../features/organiser/AnalyticsPage'
+import ExhibitorSubmissionsPage from '../features/organiser/ExhibitorSubmissionsPage'
 import CheckInExportPage from '../features/organiser/CheckInExportPage'
 import LinksPage from '../features/organiser/LinksPage'
 import LabourPassesPage from '../features/crew/LabourPassesPage'
@@ -62,6 +63,7 @@ export const router = createBrowserRouter([
           { path: '/organiser', element: <Navigate to="/organiser/dashboard" replace /> },
           { path: '/organiser/dashboard', element: <DashboardPage /> },
           { path: '/organiser/analytics', element: <AnalyticsPage /> },
+          { path: '/organiser/exhibitor-submissions', element: <ExhibitorSubmissionsPage /> },
           { path: '/organiser/labour-passes', element: <LabourPassesTable /> },
           { path: '/organiser/check-ins', element: <CheckInExportPage /> },
           { path: '/organiser/links', element: <LinksPage /> },
