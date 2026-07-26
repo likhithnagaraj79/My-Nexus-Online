@@ -59,7 +59,7 @@ class AuthServiceTest {
     void setUp() {
         authService = new AuthService(
                 userRepository, auditLogRepository, passwordEncoder, jwtService, refreshTokenService,
-                loginTicketStore, totpService, failedLoginAttemptRecorder);
+                loginTicketStore, totpService, failedLoginAttemptRecorder, true);
     }
 
     private static User adminUser() {

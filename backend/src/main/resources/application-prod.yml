@@ -38,6 +38,11 @@ app:
   recaptcha:
     enabled: true
     secret-key: ${RECAPTCHA_SECRET_KEY}
+  # Defaults OFF for now — flip back on later with APP_TOTP_ENABLED=true + a service restart,
+  # no code redeploy needed. When off, Crew/Validator accounts log in single-step like Organiser,
+  # and no QR code is generated when creating them.
+  totp:
+    enabled: ${APP_TOTP_ENABLED:false}
   admin-bootstrap:
     username: ${ADMIN_BOOTSTRAP_USERNAME:}
     password: ${ADMIN_BOOTSTRAP_PASSWORD:}

@@ -21,6 +21,8 @@ app:
   recaptcha:
     enabled: false
     secret-key: test-secret
+  totp:
+    enabled: true
   admin-bootstrap:
     username:
     password:

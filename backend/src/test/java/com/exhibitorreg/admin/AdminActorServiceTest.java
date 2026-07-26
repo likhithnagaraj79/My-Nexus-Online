@@ -46,7 +46,7 @@ class AdminActorServiceTest {
 
     @BeforeEach
     void setUp() {
-        service = new AdminActorService(userRepository, auditLogRepository, passwordEncoder, totpService);
+        service = new AdminActorService(userRepository, auditLogRepository, passwordEncoder, totpService, true);
     }
 
     private static User userWithId(UserRole role) {

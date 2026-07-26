@@ -16,6 +16,7 @@ import com.exhibitorreg.common.exception.BusinessRuleViolationException;
 import com.exhibitorreg.common.exception.ConflictException;
 import com.exhibitorreg.common.exception.NotFoundException;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,16 +31,19 @@ public class AdminActorService {
     private final AuditLogRepository auditLogRepository;
     private final PasswordEncoder passwordEncoder;
     private final TotpService totpService;
+    private final boolean totpEnabled;
 
     public AdminActorService(
             UserRepository userRepository,
             AuditLogRepository auditLogRepository,
             PasswordEncoder passwordEncoder,
-            TotpService totpService) {
+            TotpService totpService,
+            @Value("${app.totp.enabled}") boolean totpEnabled) {
         this.userRepository = userRepository;
         this.auditLogRepository = auditLogRepository;
         this.passwordEncoder = passwordEncoder;
         this.totpService = totpService;
+        this.totpEnabled = totpEnabled;
     }
 
     @Transactional
@@ -70,7 +74,7 @@ public class AdminActorService {
     private CreatedActorResponse createCrewOrValidator(CreateCrewOrValidatorRequest request, UserRole role) {
         ensureUsernameAvailable(request.username());
 
-        String secret = totpService.generateSecret();
+        String secret = totpEnabled ? totpService.generateSecret() : null;
 
         User user = new User();
         user.setUsername(request.username());
@@ -82,7 +86,8 @@ public class AdminActorService {
         user.setMustChangePassword(true);
         userRepository.save(user);
 
-        return new CreatedActorResponse(user.getId(), totpService.buildQrPngBase64(user.getUsername(), secret));
+        String qrPngBase64 = totpEnabled ? totpService.buildQrPngBase64(user.getUsername(), secret) : null;
+        return new CreatedActorResponse(user.getId(), qrPngBase64);
     }
 
     @Transactional(readOnly = true)

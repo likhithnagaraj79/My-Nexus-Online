@@ -11,6 +11,7 @@ import com.exhibitorreg.common.AuditLogRepository;
 import com.exhibitorreg.common.exception.AccountLockedException;
 import com.exhibitorreg.common.exception.InvalidCredentialsException;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ public class AuthService {
     private final LoginTicketStore loginTicketStore;
     private final TotpService totpService;
     private final FailedLoginAttemptRecorder failedLoginAttemptRecorder;
+    private final boolean totpEnabled;
 
     public AuthService(
             UserRepository userRepository,
@@ -35,7 +37,8 @@ public class AuthService {
             RefreshTokenService refreshTokenService,
             LoginTicketStore loginTicketStore,
             TotpService totpService,
-            FailedLoginAttemptRecorder failedLoginAttemptRecorder) {
+            FailedLoginAttemptRecorder failedLoginAttemptRecorder,
+            @Value("${app.totp.enabled}") boolean totpEnabled) {
         this.userRepository = userRepository;
         this.auditLogRepository = auditLogRepository;
         this.passwordEncoder = passwordEncoder;
@@ -44,6 +47,7 @@ public class AuthService {
         this.loginTicketStore = loginTicketStore;
         this.totpService = totpService;
         this.failedLoginAttemptRecorder = failedLoginAttemptRecorder;
+        this.totpEnabled = totpEnabled;
     }
 
     @Transactional
@@ -67,7 +71,7 @@ public class AuthService {
         user.setFailedLoginAttempts(0);
         userRepository.save(user);
 
-        if (user.getRole() == UserRole.CREW || user.getRole() == UserRole.VALIDATOR) {
+        if (totpEnabled && (user.getRole() == UserRole.CREW || user.getRole() == UserRole.VALIDATOR)) {
             return LoginResponse.totpRequired(loginTicketStore.issue(user.getId()));
         }
 

@@ -32,6 +32,8 @@ app:
   recaptcha:
     enabled: true
     secret-key: ${RECAPTCHA_SECRET_KEY:}
+  totp:
+    enabled: true
   admin-bootstrap:
     username: ${ADMIN_BOOTSTRAP_USERNAME:}
     password: ${ADMIN_BOOTSTRAP_PASSWORD:}
