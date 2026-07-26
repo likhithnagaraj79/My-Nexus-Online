@@ -9,6 +9,7 @@ backend/.mvn/wrapper/maven-wrapper.jar
 
 # Backend secrets (never commit real credentials)
 backend/src/main/resources/application-local.yml
+backend/src/main/resources/keystore/dev-keystore.p12
 backend/.env
 
 # Frontend (Vite/Node)

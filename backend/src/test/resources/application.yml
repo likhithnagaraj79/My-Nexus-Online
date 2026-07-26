@@ -9,3 +9,18 @@ spring:
       ddl-auto: validate
   flyway:
     enabled: true
+
+app:
+  jwt:
+    secret: test-only-jwt-signing-secret-not-for-production-use-0123456789
+    access-token-ttl-minutes: 30
+    refresh-token-ttl-days: 7
+  cors:
+    allowed-origins: http://localhost:5173
+  public-frontend-base-url: http://localhost:5173/register/
+  recaptcha:
+    enabled: false
+    secret-key: test-secret
+  admin-bootstrap:
+    username:
+    password:

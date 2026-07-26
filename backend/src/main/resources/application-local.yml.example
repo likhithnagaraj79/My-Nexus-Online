@@ -4,5 +4,16 @@
 DB_USERNAME: exhibitor_app
 DB_PASSWORD: changeme
 
-# Used later for JWT signing once auth is implemented (Phase 3) — generate a long random secret.
+# Used for JWT signing — generate a long random secret, e.g. `openssl rand -base64 48`.
 JWT_SECRET: changeme
+
+# Password protecting backend/src/main/resources/keystore/dev-keystore.p12 (see README for keytool command).
+SSL_KEYSTORE_PASSWORD: changeme
+
+# First Admin account, created once on startup by RootAdminBootstrapRunner if the users table is empty.
+ADMIN_BOOTSTRAP_USERNAME: admin
+ADMIN_BOOTSTRAP_PASSWORD: changeme
+
+# Google reCAPTCHA secret key for the public registration form (leave blank + set app.recaptcha.enabled: false
+# in application-local.yml to disable verification during early local dev before keys are provisioned).
+RECAPTCHA_SECRET_KEY: changeme

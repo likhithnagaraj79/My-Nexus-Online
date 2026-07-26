@@ -17,9 +17,33 @@ See `backend/README.md` and `frontend/README.md` for stack-specific setup instru
 ## Quick start
 
 ```bash
-# Backend
-cd backend && ./mvnw spring-boot:run
+# Backend (serves HTTPS on https://localhost:8443 — see "HTTPS" below for first-time setup)
+cd backend && SPRING_PROFILES_ACTIVE=dev,local ./mvnw spring-boot:run
 
 # Frontend
 cd frontend && npm run dev
 ```
+
+Swagger UI: `https://localhost:8443/swagger-ui/index.html`
+
+## HTTPS (local dev)
+
+The backend serves HTTPS using a self-signed certificate that isn't committed. Generate it once:
+
+```bash
+mkdir -p backend/src/main/resources/keystore
+keytool -genkeypair -alias exhibitor-dev -keyalg RSA -keysize 2048 -storetype PKCS12 \
+  -keystore backend/src/main/resources/keystore/dev-keystore.p12 -validity 3650 \
+  -dname "CN=localhost, OU=Dev, O=ExhibitorReg, L=Local, ST=Local, C=IN" \
+  -storepass "<pick a password>" -keypass "<same password>"
+```
+
+Set that password as `SSL_KEYSTORE_PASSWORD` in `backend/src/main/resources/application-local.yml`
+(copy from `application-local.yml.example`). Browsers/curl will warn about the self-signed
+cert on localhost — expected; use `curl -k` or click through the browser warning.
+
+## First Admin account
+
+Set `ADMIN_BOOTSTRAP_USERNAME`/`ADMIN_BOOTSTRAP_PASSWORD` in `application-local.yml`. On first
+startup, if the `users` table is empty, one Admin account is created automatically (must change
+its password on first login). Every other account is created by that Admin via the API.
