@@ -1,0 +1,43 @@
+# Activate as SPRING_PROFILES_ACTIVE=prod (standalone — NOT layered on dev/local, which are
+# dev-only). Every value below with no fallback default is REQUIRED via a real environment
+# variable at deploy time; the app fails fast on boot if any are missing rather than silently
+# falling back to a dev-only convenience. See docs/PRODUCTION.md for the full deployment guide.
+server:
+  port: ${SERVER_PORT:8080}
+  ssl:
+    # Plain HTTP by default — TLS is expected to be terminated by a reverse proxy (nginx/Caddy/
+    # Apache) in front of this process. Left as an escape hatch (not removed) in case a future
+    # bare deployment needs the app to hold its own certificate directly.
+    enabled: ${SERVER_SSL_ENABLED:false}
+    key-store: ${SSL_KEYSTORE_PATH:}
+    key-store-password: ${SSL_KEYSTORE_PASSWORD:}
+    key-store-type: PKCS12
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST}
+      port: ${SPRING_DATA_REDIS_PORT}
+
+app:
+  jwt:
+    secret: ${APP_JWT_SECRET}
+    access-token-ttl-minutes: 30
+    refresh-token-ttl-days: 7
+  cors:
+    allowed-origins: ${APP_CORS_ALLOWED_ORIGINS}
+  public-frontend-base-url: ${APP_PUBLIC_FRONTEND_BASE_URL}
+  recaptcha:
+    enabled: true
+    secret-key: ${RECAPTCHA_SECRET_KEY}
+  admin-bootstrap:
+    username: ${ADMIN_BOOTSTRAP_USERNAME:}
+    password: ${ADMIN_BOOTSTRAP_PASSWORD:}

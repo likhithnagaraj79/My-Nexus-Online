@@ -5,6 +5,8 @@ Multi-role event exhibitor registration platform (Admin, Organiser, Crew, Valida
 - `backend/` — Spring Boot (Java, Maven) API
 - `frontend/` — React + TypeScript (Vite) web app
 - `docs/spec/` — original product specification
+- `docs/PRODUCTION.md` — production deployment guide (no Docker; plain `java -jar` + a static
+  frontend build behind a reverse proxy)
 
 See `backend/README.md` and `frontend/README.md` for stack-specific setup instructions.
 
@@ -91,3 +93,10 @@ Then run it explicitly:
 RUN_PG_BACKUP_IT=true DB_USERNAME=exhibitor_app DB_PASSWORD=<your local exhibitor_app password> \
   ./mvnw test -Dtest=BackupRestoreRealPostgresIntegrationTest
 ```
+
+## Production
+
+See [`docs/PRODUCTION.md`](docs/PRODUCTION.md) — no Docker; the backend runs as a plain
+`java -jar` process behind a reverse proxy that terminates TLS, and the frontend is a static
+build served by any web server. Covers the required environment variables, a reverse-proxy
+example, and a pre-deploy security checklist.
