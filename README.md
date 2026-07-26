@@ -20,7 +20,7 @@ See `backend/README.md` and `frontend/README.md` for stack-specific setup instru
 # Backend (serves HTTPS on https://localhost:8443 — see "HTTPS" below for first-time setup)
 cd backend && SPRING_PROFILES_ACTIVE=dev,local ./mvnw spring-boot:run
 
-# Frontend
+# Frontend (serves HTTPS on https://localhost:5173 — required to match the backend's CORS allowlist)
 cd frontend && npm run dev
 ```
 
@@ -41,6 +41,13 @@ keytool -genkeypair -alias exhibitor-dev -keyalg RSA -keysize 2048 -storetype PK
 Set that password as `SSL_KEYSTORE_PASSWORD` in `backend/src/main/resources/application-local.yml`
 (copy from `application-local.yml.example`). Browsers/curl will warn about the self-signed
 cert on localhost — expected; use `curl -k` or click through the browser warning.
+
+The frontend's Vite dev server also serves HTTPS, via `@vitejs/plugin-basic-ssl`
+(auto-generates its own self-signed cert, no setup needed — this only runs for `npm run dev`,
+not `npm run build`). This is required: the backend's CORS allowlist (`app.cors.allowed-origins`)
+is pinned to `https://localhost:5173`, so a plain-HTTP dev server would be rejected by the
+browser's CORS preflight. Expect a second, separate self-signed-cert warning the first time you
+open `https://localhost:5173`.
 
 ## First Admin account
 
