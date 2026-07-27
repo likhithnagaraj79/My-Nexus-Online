@@ -15,20 +15,20 @@ import { Rnd } from 'react-rnd'
 import { getBadgeTemplate, saveBadgeTemplate, type BadgeTemplate, type ElementStyle } from '../../api/crew'
 import { extractErrorMessage } from '../../api/client'
 
-// Editor preview scale — matches the physical badge's 10cm x 15cm (2:3) aspect ratio. The
+// Editor preview scale — matches the physical badge's 10.1cm x 15.3cm aspect ratio. The
 // actual print output uses cm/pt directly (ExhibitorPassesPage) and is unaffected by this
 // on-screen scale; only the stored xPercent/yPercent/fontSizePt travel between the two.
-const ARTBOARD_WIDTH = 300
-const ARTBOARD_HEIGHT = 450
+const ARTBOARD_WIDTH = 303
+const ARTBOARD_HEIGHT = 459
 const ELEMENT_WIDTH = 220
 const ELEMENT_HEIGHT = 40
 
-// The physical badge stock's holder covers the top 8.5cm and bottom 2cm (15cm - 2cm) of the
-// 15cm height. Shaded here purely as a reference — Crew can still drag/print an element into
-// this band if they choose to; nothing is clamped or blocked.
-const PX_PER_CM = ARTBOARD_HEIGHT / 15
-const SAFE_AREA_TOP_PX = 8.5 * PX_PER_CM
-const SAFE_AREA_BOTTOM_PX = 13 * PX_PER_CM
+// The physical badge stock's holder covers the top 8.6cm and bottom 1.5cm (15.3cm - 1.5cm) of
+// the 15.3cm height. Shaded here purely as a reference — Crew can still drag/print an element
+// into this band if they choose to; nothing is clamped or blocked.
+const PX_PER_CM = ARTBOARD_HEIGHT / 15.3
+const SAFE_AREA_TOP_PX = 8.6 * PX_PER_CM
+const SAFE_AREA_BOTTOM_PX = 13.8 * PX_PER_CM
 
 type ElementKey = 'name' | 'designation' | 'company'
 
@@ -98,7 +98,7 @@ export default function BadgeTemplateEditorPage() {
         Badge Template
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Drag Name, Designation, and Company into position for the 10cm × 15cm printed badge.
+        Drag Name, Designation, and Company into position for the 10.1cm × 15.3cm printed badge.
         This layout applies to every exhibitor badge once saved. The shaded top and bottom
         strips show where the badge holder sits — you can still drag an element there and it
         will print, this is just a reference.

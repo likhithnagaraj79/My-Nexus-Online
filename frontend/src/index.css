@@ -9,7 +9,7 @@ body {
 }
 
 /* Crew's exhibitor badge print (ExhibitorPassesPage) — a hidden render tree only shown to the
- * print engine, sized to the physical 10cm x 15cm badge with one page per person. */
+ * print engine, sized to the physical 10.1cm x 15.3cm badge with one page per person. */
 @media screen {
   #badge-print-area {
     display: none;
@@ -18,7 +18,7 @@ body {
 
 @media print {
   @page {
-    size: 10cm 15cm;
+    size: 10.1cm 15.3cm;
     margin: 0;
   }
 
@@ -38,8 +38,8 @@ body {
   }
 
   .badge-page {
-    width: 10cm;
-    height: 15cm;
+    width: 10.1cm;
+    height: 15.3cm;
     position: relative;
     page-break-after: always;
   }

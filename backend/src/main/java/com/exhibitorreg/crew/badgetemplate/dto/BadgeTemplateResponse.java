@@ -24,12 +24,13 @@ public record BadgeTemplateResponse(ElementStyle name, ElementStyle designation,
     }
 
     /** Sensible starting layout shown before Crew ever saves a template: all three elements
-     * centered horizontally and kept within the badge stock's printable band (8.5cm-13cm of the
-     * 15cm height — text above or below that is hidden by the badge holder). */
+     * centered horizontally, and centered as a group within the badge stock's printable band
+     * (8.6cm-13.8cm of the 15.3cm height — text above or below that is hidden by the badge
+     * holder). */
     public static BadgeTemplateResponse defaultTemplate() {
         return new BadgeTemplateResponse(
-                new ElementStyle(50, 72, 20, true),
-                new ElementStyle(50, 82, 14, false),
-                new ElementStyle(50, 62, 24, true));
+                new ElementStyle(50, 73.20, 20, true),
+                new ElementStyle(50, 81.70, 14, false),
+                new ElementStyle(50, 64.71, 24, true));
     }
 }

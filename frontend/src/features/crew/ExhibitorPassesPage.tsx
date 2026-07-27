@@ -40,8 +40,8 @@ function BadgeText({ style, children }: { style: ElementStyle; children: string 
 
 // Matches the safe-area band enforced in BadgeTemplateEditorPage — shaded here too so Crew can
 // see, while reviewing the print preview, exactly which portion the badge holder will cover.
-const DEAD_ZONE_TOP_PERCENT = (8.5 / 15) * 100
-const DEAD_ZONE_BOTTOM_HEIGHT_PERCENT = (2 / 15) * 100
+const DEAD_ZONE_TOP_PERCENT = (8.6 / 15.3) * 100
+const DEAD_ZONE_BOTTOM_HEIGHT_PERCENT = (1.5 / 15.3) * 100
 
 const TRISTATE_OPTIONS: { value: '' | 'true' | 'false'; label: string }[] = [
   { value: '', label: 'Any' },
@@ -242,7 +242,7 @@ export default function ExhibitorPassesPage() {
       <QrCodeDialog passId={qrTarget} onClose={() => setQrTarget(null)} />
 
       {/* Hidden on screen (index.css), visible only under @media print — one physical
-          10cm x 15cm page per person just printed, positioned per the saved badge template.
+          10.1cm x 15.3cm page per person just printed, positioned per the saved badge template.
           No QR code: the printed badge only ever shows Name/Designation/Company. */}
       {templateQuery.data && (
         <div id="badge-print-area">
