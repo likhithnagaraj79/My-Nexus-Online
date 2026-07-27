@@ -13,6 +13,7 @@ import {
   type ExhibitorPassSummary,
 } from '../../api/crew'
 import { extractErrorMessage } from '../../api/client'
+import { fitFontSizePt } from './badgeTextFit'
 import IssuePassDialog from './IssuePassDialog'
 import QrCodeDialog from './QrCodeDialog'
 
@@ -42,6 +43,13 @@ function BadgeText({ style, children }: { style: ElementStyle; children: string 
 // see, while reviewing the print preview, exactly which portion the badge holder will cover.
 const DEAD_ZONE_TOP_PERCENT = (8.6 / 15.3) * 100
 const DEAD_ZONE_BOTTOM_HEIGHT_PERCENT = (1.5 / 15.3) * 100
+
+// An exhibitor's actual name/designation/company can be far longer than the template's sample
+// text — shrink just that element's font size if this specific value would otherwise print
+// past the badge's physical edge, instead of clipping it.
+function fittedStyle(text: string, style: ElementStyle): ElementStyle {
+  return { ...style, fontSizePt: fitFontSizePt(text, style.fontSizePt, style.bold) }
+}
 
 const TRISTATE_OPTIONS: { value: '' | 'true' | 'false'; label: string }[] = [
   { value: '', label: 'Any' },
@@ -253,9 +261,13 @@ export default function ExhibitorPassesPage() {
                 className="badge-dead-zone"
                 style={{ bottom: 0, height: `${DEAD_ZONE_BOTTOM_HEIGHT_PERCENT}%` }}
               />
-              <BadgeText style={templateQuery.data.name}>{person.name}</BadgeText>
-              <BadgeText style={templateQuery.data.designation}>{person.designation}</BadgeText>
-              <BadgeText style={templateQuery.data.company}>{person.companyName}</BadgeText>
+              <BadgeText style={fittedStyle(person.name, templateQuery.data.name)}>{person.name}</BadgeText>
+              <BadgeText style={fittedStyle(person.designation, templateQuery.data.designation)}>
+                {person.designation}
+              </BadgeText>
+              <BadgeText style={fittedStyle(person.companyName, templateQuery.data.company)}>
+                {person.companyName}
+              </BadgeText>
             </div>
           ))}
         </div>

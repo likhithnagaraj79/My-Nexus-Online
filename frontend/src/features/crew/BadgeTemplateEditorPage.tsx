@@ -136,8 +136,24 @@ export default function BadgeTemplateEditorPage() {
               height: SAFE_AREA_TOP_PX,
               bgcolor: 'action.disabledBackground',
               pointerEvents: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              p: 1,
             }}
-          />
+          >
+            <Typography variant="caption" color="text.secondary">
+              Non-printable area — top 8.6cm (badge holder)
+            </Typography>
+          </Box>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ position: 'absolute', top: SAFE_AREA_TOP_PX + 4, left: 4, pointerEvents: 'none' }}
+          >
+            Printable area
+          </Typography>
           <Box
             sx={{
               position: 'absolute',
@@ -147,8 +163,17 @@ export default function BadgeTemplateEditorPage() {
               height: ARTBOARD_HEIGHT - SAFE_AREA_BOTTOM_PX,
               bgcolor: 'action.disabledBackground',
               pointerEvents: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              p: 1,
             }}
-          />
+          >
+            <Typography variant="caption" color="text.secondary">
+              Non-printable area — bottom 1.5cm (badge holder)
+            </Typography>
+          </Box>
           {(Object.keys(ELEMENT_LABELS) as ElementKey[]).map((key) => {
             const style = template[key]
             const { x, y } = percentToPixels(style)
