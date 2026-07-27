@@ -35,6 +35,7 @@ app:
   cors:
     allowed-origins: ${APP_CORS_ALLOWED_ORIGINS}
   public-frontend-base-url: ${APP_PUBLIC_FRONTEND_BASE_URL}
+  public-frontend-delegate-base-url: ${APP_PUBLIC_FRONTEND_DELEGATE_BASE_URL}
   recaptcha:
     enabled: true
     secret-key: ${RECAPTCHA_SECRET_KEY}

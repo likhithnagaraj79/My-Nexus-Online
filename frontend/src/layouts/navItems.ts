@@ -6,9 +6,11 @@ import EventIcon from '@mui/icons-material/Event'
 import FileDownloadIcon from '@mui/icons-material/FileDownload'
 import HistoryIcon from '@mui/icons-material/History'
 import LinkIcon from '@mui/icons-material/Link'
+import AddLinkIcon from '@mui/icons-material/AddLink'
 import PeopleIcon from '@mui/icons-material/People'
 import ContactPageIcon from '@mui/icons-material/ContactPage'
 import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize'
+import GroupsIcon from '@mui/icons-material/Groups'
 import QrCode2Icon from '@mui/icons-material/QrCode2'
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner'
 import type { SvgIconComponent } from '@mui/icons-material'
@@ -35,10 +37,12 @@ export const NAV_ITEMS: Record<Role, NavItem[]> = {
     { label: 'Labour Passes', path: '/organiser/labour-passes', icon: BadgeIcon },
     { label: 'Check-ins', path: '/organiser/check-ins', icon: FileDownloadIcon },
     { label: 'Registration Links', path: '/organiser/links', icon: LinkIcon },
+    { label: 'Conference Delegate Links', path: '/organiser/delegate-links', icon: AddLinkIcon },
   ],
   CREW: [
     { label: 'Labour Passes', path: '/crew/labour-passes', icon: BadgeIcon },
     { label: 'Exhibitor Passes', path: '/crew/exhibitor-passes', icon: QrCode2Icon },
+    { label: 'Conference Delegates', path: '/crew/conference-delegates', icon: GroupsIcon },
     { label: 'Badge Template', path: '/crew/badge-template', icon: DashboardCustomizeIcon },
   ],
   VALIDATOR: [{ label: 'Scan', path: '/validator/scan', icon: QrCodeScannerIcon }],

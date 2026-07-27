@@ -29,6 +29,7 @@ app:
   cors:
     allowed-origins: https://localhost:5173
   public-frontend-base-url: https://localhost:5173/register/
+  public-frontend-delegate-base-url: https://localhost:5173/register-delegate/
   recaptcha:
     enabled: true
     secret-key: ${RECAPTCHA_SECRET_KEY:}

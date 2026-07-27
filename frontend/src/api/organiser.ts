@@ -57,3 +57,24 @@ export const listLinks = () => apiClient.get<LinkResponse[]>('/api/organiser/lin
 
 export const deactivateLink = (id: string) =>
   apiClient.patch<LinkResponse>(`/api/organiser/links/${id}/deactivate`).then((r) => r.data)
+
+export interface CreateDelegateLinkRequest {
+  expiresAt?: string
+}
+
+export interface DelegateLinkResponse {
+  id: string
+  publicUrl: string
+  expiresAt: string | null
+  active: boolean
+  createdAt: string
+}
+
+export const createDelegateLink = (body: CreateDelegateLinkRequest) =>
+  apiClient.post<DelegateLinkResponse>('/api/organiser/delegate-links', body).then((r) => r.data)
+
+export const listDelegateLinks = () =>
+  apiClient.get<DelegateLinkResponse[]>('/api/organiser/delegate-links').then((r) => r.data)
+
+export const deactivateDelegateLink = (id: string) =>
+  apiClient.patch<DelegateLinkResponse>(`/api/organiser/delegate-links/${id}/deactivate`).then((r) => r.data)

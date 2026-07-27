@@ -75,3 +75,27 @@ export const getBadgeTemplate = () => apiClient.get<BadgeTemplate>('/api/crew/ba
 
 export const saveBadgeTemplate = (template: BadgeTemplate) =>
   apiClient.put<BadgeTemplate>('/api/crew/badge-template', template).then((r) => r.data)
+
+export interface DelegatePassSummary {
+  id: string
+  name: string
+  designation: string
+  companyName: string
+  printed: boolean
+  printedAt: string | null
+}
+
+export interface ListDelegatePassesParams {
+  printed?: boolean
+  q?: string
+}
+
+export interface PrintDelegatesRequest {
+  personIds: string[]
+}
+
+export const listDelegatePasses = (params: ListDelegatePassesParams) =>
+  apiClient.get<DelegatePassSummary[]>('/api/crew/conference-delegates', { params }).then((r) => r.data)
+
+export const printDelegatePasses = (body: PrintDelegatesRequest) =>
+  apiClient.post<DelegatePassSummary[]>('/api/crew/conference-delegates/print', body).then((r) => r.data)
