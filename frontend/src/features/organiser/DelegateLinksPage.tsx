@@ -1,5 +1,7 @@
 import AddIcon from '@mui/icons-material/Add'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import DownloadIcon from '@mui/icons-material/Download'
+import UploadFileIcon from '@mui/icons-material/UploadFile'
 import {
   Alert,
   Box,
@@ -9,7 +11,9 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   IconButton,
+  Paper,
   Stack,
   Table,
   TableBody,
@@ -21,13 +25,21 @@ import {
 } from '@mui/material'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { createDelegateLink, deactivateDelegateLink, listDelegateLinks } from '../../api/organiser'
+import {
+  createDelegateLink,
+  deactivateDelegateLink,
+  downloadDelegateImportTemplate,
+  importDelegatesCsv,
+  listDelegateLinks,
+} from '../../api/organiser'
 import { extractErrorMessage } from '../../api/client'
+import { downloadBlob } from '../../lib/downloadBlob'
 
 export default function DelegateLinksPage() {
   const [dialogOpen, setDialogOpen] = useState(false)
   const [expiresAt, setExpiresAt] = useState('')
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [importFile, setImportFile] = useState<File | null>(null)
 
   const queryClient = useQueryClient()
 
@@ -45,6 +57,16 @@ export default function DelegateLinksPage() {
   const deactivateMutation = useMutation({
     mutationFn: (id: string) => deactivateDelegateLink(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['organiser-delegate-links'] }),
+  })
+
+  const templateMutation = useMutation({
+    mutationFn: downloadDelegateImportTemplate,
+    onSuccess: (blob) => downloadBlob(blob, 'conference-delegates-template.csv'),
+  })
+
+  const importMutation = useMutation({
+    mutationFn: () => importDelegatesCsv(importFile!),
+    onSuccess: () => setImportFile(null),
   })
 
   const handleCopy = async (id: string, url: string) => {
@@ -140,6 +162,67 @@ export default function DelegateLinksPage() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Paper sx={{ p: 3, mt: 3 }}>
+        <Typography variant="h6" gutterBottom>
+          Bulk Import via CSV
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Import delegates directly without a registration link. Columns must match the
+          downloadable template exactly: Name, Company Name, Designation, Mobile Number, Email.
+        </Typography>
+
+        {templateMutation.isError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {extractErrorMessage(templateMutation.error)}
+          </Alert>
+        )}
+        {importMutation.isError && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {extractErrorMessage(importMutation.error)}
+          </Alert>
+        )}
+        {importMutation.isSuccess && (
+          <Alert severity={importMutation.data.errors.length > 0 ? 'warning' : 'success'} sx={{ mb: 2 }}>
+            <Typography variant="body2">Imported {importMutation.data.importedCount} delegate(s).</Typography>
+            {importMutation.data.errors.length > 0 && (
+              <Box component="ul" sx={{ m: 0, pl: 2 }}>
+                {importMutation.data.errors.map((err) => (
+                  <li key={err.rowNumber}>
+                    Row {err.rowNumber}: {err.reason}
+                  </li>
+                ))}
+              </Box>
+            )}
+          </Alert>
+        )}
+
+        <Stack spacing={2} direction={{ xs: 'column', sm: 'row' }} sx={{ alignItems: { sm: 'center' } }}>
+          <Button
+            variant="outlined"
+            startIcon={<DownloadIcon />}
+            disabled={templateMutation.isPending}
+            onClick={() => templateMutation.mutate()}
+          >
+            {templateMutation.isPending ? 'Downloading…' : 'Download CSV Template'}
+          </Button>
+
+          <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', sm: 'block' } }} />
+
+          <Button variant="outlined" component="label" startIcon={<UploadFileIcon />}>
+            {importFile ? importFile.name : 'Choose CSV file'}
+            <input type="file" accept=".csv" hidden onChange={(e) => setImportFile(e.target.files?.[0] ?? null)} />
+          </Button>
+
+          <Button
+            variant="contained"
+            disabled={!importFile || importMutation.isPending}
+            onClick={() => importMutation.mutate()}
+          >
+            {importMutation.isPending ? 'Uploading…' : 'Upload'}
+          </Button>
+        </Stack>
+      </Paper>
     </>
   )
 }

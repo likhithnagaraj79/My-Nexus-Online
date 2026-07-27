@@ -13,7 +13,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /** One flat record per registered delegate — unlike exhibitors, there's no company dedup or
- * multi-person-per-submission indirection: each public submission creates exactly one row. */
+ * multi-person-per-submission indirection: each public submission creates exactly one row.
+ * {@code link} is null for delegates bulk-imported via CSV, which don't come through any
+ * registration link. */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,7 +24,7 @@ import lombok.Setter;
 public class ConferenceDelegate extends Auditable {
 
     @ManyToOne
-    @JoinColumn(name = "link_id", nullable = false)
+    @JoinColumn(name = "link_id")
     private ConferenceDelegateRegistrationLink link;
 
     @Column(nullable = false, length = 150)

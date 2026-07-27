@@ -60,7 +60,8 @@ public class ExhibitorPassService {
             String likePattern = "%" + q.toLowerCase() + "%";
             spec = spec.and((root, query, cb) -> cb.or(
                     cb.like(cb.lower(root.get("name")), likePattern),
-                    cb.like(cb.lower(root.get("designation")), likePattern)));
+                    cb.like(cb.lower(root.get("designation")), likePattern),
+                    cb.like(cb.lower(root.get("company").get("name")), likePattern)));
         }
 
         return exhibitorPersonRepository.findAll(spec).stream().map(ExhibitorPassSummary::from).toList();

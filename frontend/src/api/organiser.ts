@@ -78,3 +78,28 @@ export const listDelegateLinks = () =>
 
 export const deactivateDelegateLink = (id: string) =>
   apiClient.patch<DelegateLinkResponse>(`/api/organiser/delegate-links/${id}/deactivate`).then((r) => r.data)
+
+export interface DelegateImportRowError {
+  rowNumber: number
+  reason: string
+}
+
+export interface DelegateImportSummary {
+  importedCount: number
+  errors: DelegateImportRowError[]
+}
+
+export const downloadDelegateImportTemplate = () =>
+  apiClient
+    .get('/api/organiser/conference-delegates/import-template', { responseType: 'blob' })
+    .then((r) => r.data as Blob)
+
+export const importDelegatesCsv = (file: File) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return apiClient
+    .post<DelegateImportSummary>('/api/organiser/conference-delegates/import', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+    .then((r) => r.data)
+}
