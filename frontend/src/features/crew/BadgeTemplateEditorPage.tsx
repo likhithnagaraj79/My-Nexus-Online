@@ -23,6 +23,15 @@ const ARTBOARD_HEIGHT = 450
 const ELEMENT_WIDTH = 220
 const ELEMENT_HEIGHT = 40
 
+// The physical badge stock hides text above 8.5cm and below 13cm (15cm - 2cm) of the 15cm
+// height — a badge-holder clip/fold area. This band is where dragging is confined to, so a
+// saved template can never place text somewhere the printed badge won't actually show it.
+const PX_PER_CM = ARTBOARD_HEIGHT / 15
+const SAFE_AREA_TOP_PX = 8.5 * PX_PER_CM
+const SAFE_AREA_BOTTOM_PX = 13 * PX_PER_CM
+const SAFE_AREA_HEIGHT_PX = SAFE_AREA_BOTTOM_PX - SAFE_AREA_TOP_PX
+const SAFE_AREA_SELECTOR = '#badge-safe-area'
+
 type ElementKey = 'name' | 'designation' | 'company'
 
 const ELEMENT_LABELS: Record<ElementKey, string> = {
@@ -92,12 +101,19 @@ export default function BadgeTemplateEditorPage() {
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
         Drag Name, Designation, and Company into position for the 10cm × 15cm printed badge.
-        This layout applies to every exhibitor badge once saved.
+        This layout applies to every exhibitor badge once saved. The shaded top and bottom
+        strips are covered by the badge holder and are not printable — dragging is confined
+        to the clear area between them.
       </Typography>
 
       {mutation.isError && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {extractErrorMessage(mutation.error)}
+        </Alert>
+      )}
+      {mutation.isSuccess && (
+        <Alert severity="success" sx={{ mb: 2 }}>
+          Template saved.
         </Alert>
       )}
 
@@ -113,6 +129,40 @@ export default function BadgeTemplateEditorPage() {
             borderColor: 'divider',
           }}
         >
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: SAFE_AREA_TOP_PX,
+              bgcolor: 'action.disabledBackground',
+              pointerEvents: 'none',
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              top: SAFE_AREA_BOTTOM_PX,
+              left: 0,
+              width: '100%',
+              height: ARTBOARD_HEIGHT - SAFE_AREA_BOTTOM_PX,
+              bgcolor: 'action.disabledBackground',
+              pointerEvents: 'none',
+            }}
+          />
+          <Box
+            id="badge-safe-area"
+            sx={{
+              position: 'absolute',
+              top: SAFE_AREA_TOP_PX,
+              left: 0,
+              width: '100%',
+              height: SAFE_AREA_HEIGHT_PX,
+              pointerEvents: 'none',
+            }}
+          />
+
           {(Object.keys(ELEMENT_LABELS) as ElementKey[]).map((key) => {
             const style = template[key]
             const { x, y } = percentToPixels(style)
@@ -121,7 +171,7 @@ export default function BadgeTemplateEditorPage() {
                 key={key}
                 size={{ width: ELEMENT_WIDTH, height: ELEMENT_HEIGHT }}
                 position={{ x, y }}
-                bounds="parent"
+                bounds={SAFE_AREA_SELECTOR}
                 enableResizing={false}
                 onDragStop={(_event, data) => updateElement(key, pixelsToPercent(data.x, data.y))}
               >

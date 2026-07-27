@@ -33,9 +33,9 @@ export const handlers = [
   // about the actual template values override this per-test via server.use().
   http.get(`${BASE_URL}/api/crew/badge-template`, () =>
     HttpResponse.json({
-      name: { xPercent: 50, yPercent: 45, fontSizePt: 20, bold: true },
-      designation: { xPercent: 50, yPercent: 58, fontSizePt: 14, bold: false },
-      company: { xPercent: 50, yPercent: 15, fontSizePt: 24, bold: true },
+      name: { xPercent: 50, yPercent: 72, fontSizePt: 20, bold: true },
+      designation: { xPercent: 50, yPercent: 82, fontSizePt: 14, bold: false },
+      company: { xPercent: 50, yPercent: 62, fontSizePt: 24, bold: true },
     }),
   ),
 ]

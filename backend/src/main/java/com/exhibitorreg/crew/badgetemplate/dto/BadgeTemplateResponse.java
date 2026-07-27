@@ -23,12 +23,13 @@ public record BadgeTemplateResponse(ElementStyle name, ElementStyle designation,
                         template.isCompanyBold()));
     }
 
-    /** Sensible starting layout shown before Crew ever saves a template: company near the top,
-     * name centered in the middle, designation just below it. */
+    /** Sensible starting layout shown before Crew ever saves a template: all three elements
+     * centered horizontally and kept within the badge stock's printable band (8.5cm-13cm of the
+     * 15cm height — text above or below that is hidden by the badge holder). */
     public static BadgeTemplateResponse defaultTemplate() {
         return new BadgeTemplateResponse(
-                new ElementStyle(50, 45, 20, true),
-                new ElementStyle(50, 58, 14, false),
-                new ElementStyle(50, 15, 24, true));
+                new ElementStyle(50, 72, 20, true),
+                new ElementStyle(50, 82, 14, false),
+                new ElementStyle(50, 62, 24, true));
     }
 }
