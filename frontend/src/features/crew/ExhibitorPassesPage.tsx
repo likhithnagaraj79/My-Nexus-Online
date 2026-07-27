@@ -38,6 +38,11 @@ function BadgeText({ style, children }: { style: ElementStyle; children: string 
   )
 }
 
+// Matches the safe-area band enforced in BadgeTemplateEditorPage — shaded here too so Crew can
+// see, while reviewing the print preview, exactly which portion the badge holder will cover.
+const DEAD_ZONE_TOP_PERCENT = (8.5 / 15) * 100
+const DEAD_ZONE_BOTTOM_HEIGHT_PERCENT = (2 / 15) * 100
+
 const TRISTATE_OPTIONS: { value: '' | 'true' | 'false'; label: string }[] = [
   { value: '', label: 'Any' },
   { value: 'true', label: 'Yes' },
@@ -69,9 +74,13 @@ export default function ExhibitorPassesPage() {
 
   const printMutation = useMutation({
     mutationFn: printExhibitorPasses,
-    onSuccess: (printed) => {
+    onSuccess: async (printed) => {
       queryClient.invalidateQueries({ queryKey: ['exhibitor-passes'] })
       setSelection({ type: 'include', ids: new Set() })
+      // Force a fresh fetch rather than trusting whatever's already cached under this query
+      // key — Crew may have just saved a new template on another page/tab a moment ago, and
+      // the printed badge must always reflect the latest saved layout, not a stale one.
+      await queryClient.fetchQuery({ queryKey: ['badge-template'], queryFn: getBadgeTemplate })
       setPrintQueue(printed)
     },
   })
@@ -239,6 +248,11 @@ export default function ExhibitorPassesPage() {
         <div id="badge-print-area">
           {printQueue.map((person) => (
             <div key={person.id} className="badge-page">
+              <div className="badge-dead-zone" style={{ top: 0, height: `${DEAD_ZONE_TOP_PERCENT}%` }} />
+              <div
+                className="badge-dead-zone"
+                style={{ bottom: 0, height: `${DEAD_ZONE_BOTTOM_HEIGHT_PERCENT}%` }}
+              />
               <BadgeText style={templateQuery.data.name}>{person.name}</BadgeText>
               <BadgeText style={templateQuery.data.designation}>{person.designation}</BadgeText>
               <BadgeText style={templateQuery.data.company}>{person.companyName}</BadgeText>
