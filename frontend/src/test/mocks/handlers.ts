@@ -27,4 +27,15 @@ export const handlers = [
       tokens: { accessToken: 'access-1', refreshToken: 'refresh-1', mustChangePassword: false },
     })
   }),
+
+  // Queried unconditionally by any Crew page rendering exhibitor passes (for the print
+  // template) — a default here keeps unrelated tests' console output clean; tests that care
+  // about the actual template values override this per-test via server.use().
+  http.get(`${BASE_URL}/api/crew/badge-template`, () =>
+    HttpResponse.json({
+      name: { xPercent: 50, yPercent: 45, fontSizePt: 20, bold: true },
+      designation: { xPercent: 50, yPercent: 58, fontSizePt: 14, bold: false },
+      company: { xPercent: 50, yPercent: 15, fontSizePt: 24, bold: true },
+    }),
+  ),
 ]

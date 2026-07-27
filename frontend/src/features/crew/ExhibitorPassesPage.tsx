@@ -4,11 +4,39 @@ import QrCode2Icon from '@mui/icons-material/QrCode2'
 import { Alert, Box, Button, Chip, MenuItem, Paper, Stack, TextField, Typography } from '@mui/material'
 import { DataGrid, GridActionsCellItem, type GridColDef, type GridRowSelectionModel } from '@mui/x-data-grid'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useMemo, useState } from 'react'
-import { listExhibitorPasses, printExhibitorPasses, type ExhibitorPassSummary } from '../../api/crew'
+import { useEffect, useMemo, useState } from 'react'
+import {
+  getBadgeTemplate,
+  listExhibitorPasses,
+  printExhibitorPasses,
+  type ElementStyle,
+  type ExhibitorPassSummary,
+} from '../../api/crew'
 import { extractErrorMessage } from '../../api/client'
 import IssuePassDialog from './IssuePassDialog'
 import QrCodeDialog from './QrCodeDialog'
+
+/** Absolutely-positions text centered on (xPercent, yPercent) of the badge — same convention
+ * used by the drag-and-drop editor, just rendered here at true print scale (cm) instead of the
+ * editor's on-screen preview scale (px). */
+function BadgeText({ style, children }: { style: ElementStyle; children: string }) {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: `${style.xPercent}%`,
+        top: `${style.yPercent}%`,
+        transform: 'translate(-50%, -50%)',
+        fontSize: `${style.fontSizePt}pt`,
+        fontWeight: style.bold ? 700 : 400,
+        whiteSpace: 'nowrap',
+        fontFamily: 'Arial, sans-serif',
+      }}
+    >
+      {children}
+    </div>
+  )
+}
 
 const TRISTATE_OPTIONS: { value: '' | 'true' | 'false'; label: string }[] = [
   { value: '', label: 'Any' },
@@ -23,6 +51,7 @@ export default function ExhibitorPassesPage() {
   const [selection, setSelection] = useState<GridRowSelectionModel>({ type: 'include', ids: new Set() })
   const [issueTarget, setIssueTarget] = useState<ExhibitorPassSummary | null>(null)
   const [qrTarget, setQrTarget] = useState<string | null>(null)
+  const [printQueue, setPrintQueue] = useState<ExhibitorPassSummary[]>([])
 
   const queryClient = useQueryClient()
 
@@ -36,13 +65,27 @@ export default function ExhibitorPassesPage() {
       }),
   })
 
+  const templateQuery = useQuery({ queryKey: ['badge-template'], queryFn: getBadgeTemplate })
+
   const printMutation = useMutation({
     mutationFn: printExhibitorPasses,
-    onSuccess: () => {
+    onSuccess: (printed) => {
       queryClient.invalidateQueries({ queryKey: ['exhibitor-passes'] })
       setSelection({ type: 'include', ids: new Set() })
+      setPrintQueue(printed)
     },
   })
+
+  // Fires the real browser print once the hidden badge pages below have committed to the DOM;
+  // clears the queue once the browser reports printing is done (or cancelled) so the hidden
+  // print area doesn't linger with stale content for the next print.
+  useEffect(() => {
+    if (printQueue.length === 0) return
+    window.print()
+    const clear = () => setPrintQueue([])
+    window.addEventListener('afterprint', clear)
+    return () => window.removeEventListener('afterprint', clear)
+  }, [printQueue])
 
   const selectedIds = useMemo(() => Array.from(selection.ids), [selection])
 
@@ -188,6 +231,21 @@ export default function ExhibitorPassesPage() {
 
       <IssuePassDialog pass={issueTarget} onClose={() => setIssueTarget(null)} />
       <QrCodeDialog passId={qrTarget} onClose={() => setQrTarget(null)} />
+
+      {/* Hidden on screen (index.css), visible only under @media print — one physical
+          10cm x 15cm page per person just printed, positioned per the saved badge template.
+          No QR code: the printed badge only ever shows Name/Designation/Company. */}
+      {templateQuery.data && (
+        <div id="badge-print-area">
+          {printQueue.map((person) => (
+            <div key={person.id} className="badge-page">
+              <BadgeText style={templateQuery.data.name}>{person.name}</BadgeText>
+              <BadgeText style={templateQuery.data.designation}>{person.designation}</BadgeText>
+              <BadgeText style={templateQuery.data.company}>{person.companyName}</BadgeText>
+            </div>
+          ))}
+        </div>
+      )}
     </Paper>
   )
 }

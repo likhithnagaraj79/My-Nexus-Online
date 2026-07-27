@@ -57,3 +57,21 @@ export const issueExhibitorPass = (id: string, body: IssueRequest) =>
   apiClient.patch<ExhibitorPassSummary>(`/api/crew/exhibitor-passes/${id}/issue`, body).then((r) => r.data)
 
 export const exhibitorPassQrCodeUrl = (id: string) => `/api/crew/exhibitor-passes/${id}/qr-code`
+
+export interface ElementStyle {
+  xPercent: number
+  yPercent: number
+  fontSizePt: number
+  bold: boolean
+}
+
+export interface BadgeTemplate {
+  name: ElementStyle
+  designation: ElementStyle
+  company: ElementStyle
+}
+
+export const getBadgeTemplate = () => apiClient.get<BadgeTemplate>('/api/crew/badge-template').then((r) => r.data)
+
+export const saveBadgeTemplate = (template: BadgeTemplate) =>
+  apiClient.put<BadgeTemplate>('/api/crew/badge-template', template).then((r) => r.data)

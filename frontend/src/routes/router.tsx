@@ -19,6 +19,7 @@ import CheckInExportPage from '../features/organiser/CheckInExportPage'
 import LinksPage from '../features/organiser/LinksPage'
 import LabourPassesPage from '../features/crew/LabourPassesPage'
 import ExhibitorPassesPage from '../features/crew/ExhibitorPassesPage'
+import BadgeTemplateEditorPage from '../features/crew/BadgeTemplateEditorPage'
 import ScanPage from '../features/validator/ScanPage'
 import RegistrationPage from '../features/public/RegistrationPage'
 import RequireAuth from './RequireAuth'
@@ -80,6 +81,7 @@ export const router = createBrowserRouter([
           { path: '/crew', element: <Navigate to="/crew/exhibitor-passes" replace /> },
           { path: '/crew/labour-passes', element: <LabourPassesPage /> },
           { path: '/crew/exhibitor-passes', element: <ExhibitorPassesPage /> },
+          { path: '/crew/badge-template', element: <BadgeTemplateEditorPage /> },
         ],
       },
     ],

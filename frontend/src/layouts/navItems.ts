@@ -8,6 +8,7 @@ import HistoryIcon from '@mui/icons-material/History'
 import LinkIcon from '@mui/icons-material/Link'
 import PeopleIcon from '@mui/icons-material/People'
 import ContactPageIcon from '@mui/icons-material/ContactPage'
+import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize'
 import QrCode2Icon from '@mui/icons-material/QrCode2'
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner'
 import type { SvgIconComponent } from '@mui/icons-material'
@@ -38,6 +39,7 @@ export const NAV_ITEMS: Record<Role, NavItem[]> = {
   CREW: [
     { label: 'Labour Passes', path: '/crew/labour-passes', icon: BadgeIcon },
     { label: 'Exhibitor Passes', path: '/crew/exhibitor-passes', icon: QrCode2Icon },
+    { label: 'Badge Template', path: '/crew/badge-template', icon: DashboardCustomizeIcon },
   ],
   VALIDATOR: [{ label: 'Scan', path: '/validator/scan', icon: QrCodeScannerIcon }],
 }
