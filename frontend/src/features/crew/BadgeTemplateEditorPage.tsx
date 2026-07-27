@@ -186,23 +186,38 @@ export default function BadgeTemplateEditorPage() {
                 enableResizing={false}
                 onDragStop={(_event, data) => updateElement(key, pixelsToPercent(data.x, data.y))}
               >
+                {/* The 220x40 box is only a fixed-size drag handle, centered on the stored
+                    xPercent/yPercent. The sample text itself is centered on that same middle
+                    point via the identical absolute/transform technique BadgeText uses for the
+                    real print (ExhibitorPassesPage.tsx) — so it overflows the handle exactly as
+                    it will overflow the print page for long/bold text, instead of being
+                    optically re-centered within a box that doesn't match true print rendering. */}
                 <Box
                   sx={{
+                    position: 'relative',
                     width: '100%',
                     height: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
                     cursor: 'move',
                     border: '1px dashed',
                     borderColor: 'primary.main',
-                    bgcolor: 'background.paper',
-                    fontSize: `${style.fontSizePt}pt`,
-                    fontWeight: style.bold ? 700 : 400,
-                    userSelect: 'none',
                   }}
                 >
-                  {SAMPLE_TEXT[key]}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      left: '50%',
+                      top: '50%',
+                      transform: 'translate(-50%, -50%)',
+                      whiteSpace: 'nowrap',
+                      fontSize: `${style.fontSizePt}pt`,
+                      fontWeight: style.bold ? 700 : 400,
+                      userSelect: 'none',
+                      bgcolor: 'background.paper',
+                      px: 0.5,
+                    }}
+                  >
+                    {SAMPLE_TEXT[key]}
+                  </Box>
                 </Box>
               </Rnd>
             )
