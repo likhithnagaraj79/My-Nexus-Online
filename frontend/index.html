@@ -8,6 +8,12 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Crew's badge print content portals here (see ExhibitorPassesPage.tsx) instead of
+         rendering nested inside #root. Printing hides #root entirely via display:none — the
+         only way to keep the rest of the app's markup (nav, DataGrid, dialogs, etc.) from
+         contributing to the print engine's page-height calculation, which visibility:hidden
+         does NOT do (it keeps hidden elements in layout, still occupying space). -->
+    <div id="badge-print-portal"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

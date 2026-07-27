@@ -5,6 +5,7 @@ import { Alert, Box, Button, Chip, MenuItem, Paper, Stack, TextField, Typography
 import { DataGrid, GridActionsCellItem, type GridColDef, type GridRowSelectionModel } from '@mui/x-data-grid'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   getBadgeTemplate,
   listExhibitorPasses,
@@ -249,29 +250,34 @@ export default function ExhibitorPassesPage() {
       <IssuePassDialog pass={issueTarget} onClose={() => setIssueTarget(null)} />
       <QrCodeDialog passId={qrTarget} onClose={() => setQrTarget(null)} />
 
-      {/* Hidden on screen (index.css), visible only under @media print — one physical
-          10.1cm x 15.3cm page per person just printed, positioned per the saved badge template.
-          No QR code: the printed badge only ever shows Name/Designation/Company. */}
-      {templateQuery.data && (
-        <div id="badge-print-area">
-          {printQueue.map((person) => (
-            <div key={person.id} className="badge-page">
-              <div className="badge-dead-zone" style={{ top: 0, height: `${DEAD_ZONE_TOP_PERCENT}%` }} />
-              <div
-                className="badge-dead-zone"
-                style={{ bottom: 0, height: `${DEAD_ZONE_BOTTOM_HEIGHT_PERCENT}%` }}
-              />
-              <BadgeText style={fittedStyle(person.name, templateQuery.data.name)}>{person.name}</BadgeText>
-              <BadgeText style={fittedStyle(person.designation, templateQuery.data.designation)}>
-                {person.designation}
-              </BadgeText>
-              <BadgeText style={fittedStyle(person.companyName, templateQuery.data.company)}>
-                {person.companyName}
-              </BadgeText>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Portaled to #badge-print-portal (a sibling of #root, see index.html) rather than
+          rendered here inline — printing hides #root entirely via display:none, which only
+          works because this tree lives outside it. Hidden on screen (index.css), visible only
+          under @media print — one physical 10.1cm x 15.3cm page per person just printed,
+          positioned per the saved badge template. No QR code: the printed badge only ever
+          shows Name/Designation/Company. */}
+      {templateQuery.data &&
+        createPortal(
+          <div id="badge-print-area">
+            {printQueue.map((person) => (
+              <div key={person.id} className="badge-page">
+                <div className="badge-dead-zone" style={{ top: 0, height: `${DEAD_ZONE_TOP_PERCENT}%` }} />
+                <div
+                  className="badge-dead-zone"
+                  style={{ bottom: 0, height: `${DEAD_ZONE_BOTTOM_HEIGHT_PERCENT}%` }}
+                />
+                <BadgeText style={fittedStyle(person.name, templateQuery.data.name)}>{person.name}</BadgeText>
+                <BadgeText style={fittedStyle(person.designation, templateQuery.data.designation)}>
+                  {person.designation}
+                </BadgeText>
+                <BadgeText style={fittedStyle(person.companyName, templateQuery.data.company)}>
+                  {person.companyName}
+                </BadgeText>
+              </div>
+            ))}
+          </div>,
+          document.getElementById('badge-print-portal')!,
+        )}
     </Paper>
   )
 }

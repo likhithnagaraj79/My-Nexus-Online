@@ -8,10 +8,11 @@ body {
   margin: 0;
 }
 
-/* Crew's exhibitor badge print (ExhibitorPassesPage) — a hidden render tree only shown to the
- * print engine, sized to the physical 10.1cm x 15.3cm badge with one page per person. */
+/* Crew's exhibitor badge print (ExhibitorPassesPage) — portals into #badge-print-portal (see
+ * index.html), a sibling of #root, and is only shown to the print engine, sized to the physical
+ * 10.1cm x 15.3cm badge with one page per person. */
 @media screen {
-  #badge-print-area {
+  #badge-print-portal {
     display: none;
   }
 }
@@ -22,19 +23,13 @@ body {
     margin: 0;
   }
 
-  body * {
-    visibility: hidden;
-  }
-
-  #badge-print-area,
-  #badge-print-area * {
-    visibility: visible;
-  }
-
-  #badge-print-area {
-    position: absolute;
-    top: 0;
-    left: 0;
+  /* display:none (not visibility:hidden) is essential here: visibility:hidden keeps #root's
+   * content — the nav, DataGrid, dialogs, everything — in normal layout flow, still occupying
+   * space, which Chromium's print pagination counts when deciding how many physical pages are
+   * needed. That silently produced extra blank pages and squashed the actual badge content into
+   * a fraction of one page. display:none removes #root's contribution to page height entirely. */
+  #root {
+    display: none;
   }
 
   .badge-page {
