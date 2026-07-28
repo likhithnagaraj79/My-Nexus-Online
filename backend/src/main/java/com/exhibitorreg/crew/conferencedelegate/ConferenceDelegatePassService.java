@@ -8,8 +8,10 @@ import com.exhibitorreg.conferencedelegate.ConferenceDelegate;
 import com.exhibitorreg.conferencedelegate.ConferenceDelegateRepository;
 import com.exhibitorreg.crew.conferencedelegate.dto.DelegatePassSummary;
 import com.exhibitorreg.crew.conferencedelegate.dto.PrintDelegatesRequest;
+import com.exhibitorreg.crew.conferencedelegate.dto.UpdateDelegateRequest;
 import java.time.Instant;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,5 +62,20 @@ public class ConferenceDelegatePassService {
         delegateRepository.saveAll(targets);
 
         return targets.stream().map(DelegatePassSummary::from).toList();
+    }
+
+    @Transactional
+    public DelegatePassSummary update(UUID id, UpdateDelegateRequest request) {
+        ConferenceDelegate delegate = delegateRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Conference delegate not found: " + id));
+
+        delegate.setName(request.name());
+        delegate.setCompanyName(request.companyName());
+        delegate.setDesignation(request.designation());
+        delegate.setMobileNumber(request.mobileNumber());
+        delegate.setEmail(request.email());
+        delegateRepository.save(delegate);
+
+        return DelegatePassSummary.from(delegate);
     }
 }

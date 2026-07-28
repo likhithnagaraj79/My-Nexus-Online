@@ -1,6 +1,7 @@
+import EditIcon from '@mui/icons-material/Edit'
 import PrintIcon from '@mui/icons-material/Print'
 import { Alert, Box, Button, Chip, MenuItem, Paper, Stack, TextField, Typography } from '@mui/material'
-import { DataGrid, type GridColDef, type GridRowSelectionModel } from '@mui/x-data-grid'
+import { DataGrid, GridActionsCellItem, type GridColDef, type GridRowSelectionModel } from '@mui/x-data-grid'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -13,6 +14,7 @@ import {
 } from '../../api/crew'
 import { extractErrorMessage } from '../../api/client'
 import { fitFontSizePt } from './badgeTextFit'
+import EditDelegateDialog from './EditDelegateDialog'
 
 /** Absolutely-positions text centered on (xPercent, yPercent) of the badge — identical
  * technique to ExhibitorPassesPage's BadgeText, since Conference Delegates print through the
@@ -54,6 +56,7 @@ export default function DelegatePassesPage() {
   const [printedFilter, setPrintedFilter] = useState<'' | 'true' | 'false'>('')
   const [selection, setSelection] = useState<GridRowSelectionModel>({ type: 'include', ids: new Set() })
   const [printQueue, setPrintQueue] = useState<DelegatePassSummary[]>([])
+  const [editTarget, setEditTarget] = useState<DelegatePassSummary | null>(null)
 
   const queryClient = useQueryClient()
 
@@ -95,7 +98,20 @@ export default function DelegatePassesPage() {
   const selectedIds = useMemo(() => Array.from(selection.ids), [selection])
 
   const columns: GridColDef<DelegatePassSummary>[] = [
-    { field: 'name', headerName: 'Name', flex: 1, minWidth: 150 },
+    {
+      field: 'name',
+      headerName: 'Name',
+      flex: 1,
+      minWidth: 150,
+      renderCell: (params) =>
+        params.value ? (
+          params.value
+        ) : (
+          <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
+            (no name)
+          </Typography>
+        ),
+    },
     { field: 'designation', headerName: 'Designation', flex: 1, minWidth: 140 },
     { field: 'companyName', headerName: 'Company', flex: 1, minWidth: 160 },
     {
@@ -104,6 +120,20 @@ export default function DelegatePassesPage() {
       width: 110,
       renderCell: (params) =>
         params.value ? <Chip label="Printed" color="info" size="small" /> : <Chip label="Not Printed" size="small" />,
+    },
+    {
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Actions',
+      width: 80,
+      getActions: (params) => [
+        <GridActionsCellItem
+          key="edit"
+          icon={<EditIcon />}
+          label="Edit"
+          onClick={() => setEditTarget(params.row)}
+        />,
+      ],
     },
   ]
 
@@ -167,6 +197,8 @@ export default function DelegatePassesPage() {
         />
       </div>
 
+      <EditDelegateDialog delegate={editTarget} onClose={() => setEditTarget(null)} />
+
       {/* Portaled to #badge-print-portal (a sibling of #root, see index.html) rather than
           rendered here inline — printing hides #root entirely via display:none, which only
           works because this tree lives outside it. Hidden on screen (index.css), visible only
@@ -183,7 +215,9 @@ export default function DelegatePassesPage() {
                   className="badge-dead-zone"
                   style={{ bottom: 0, height: `${DEAD_ZONE_BOTTOM_HEIGHT_PERCENT}%` }}
                 />
-                <BadgeText style={fittedStyle(person.name, templateQuery.data.name)}>{person.name}</BadgeText>
+                <BadgeText style={fittedStyle(person.name ?? '', templateQuery.data.name)}>
+                  {person.name ?? ''}
+                </BadgeText>
                 <BadgeText style={fittedStyle(person.designation, templateQuery.data.designation)}>
                   {person.designation}
                 </BadgeText>

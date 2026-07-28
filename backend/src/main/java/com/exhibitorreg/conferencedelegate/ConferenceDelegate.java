@@ -15,7 +15,8 @@ import lombok.Setter;
 /** One flat record per registered delegate — unlike exhibitors, there's no company dedup or
  * multi-person-per-submission indirection: each public submission creates exactly one row.
  * {@code link} is null for delegates bulk-imported via CSV, which don't come through any
- * registration link. */
+ * registration link. {@code name} is nullable for the same reason — CSV import allows a blank
+ * name through rather than rejecting the row; Crew fills it in later via the edit action. */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,7 +28,7 @@ public class ConferenceDelegate extends Auditable {
     @JoinColumn(name = "link_id")
     private ConferenceDelegateRegistrationLink link;
 
-    @Column(nullable = false, length = 150)
+    @Column(length = 150)
     private String name;
 
     @Column(name = "company_name", nullable = false, length = 200)

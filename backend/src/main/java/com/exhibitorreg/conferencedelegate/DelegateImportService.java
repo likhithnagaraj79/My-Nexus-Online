@@ -82,7 +82,8 @@ public class DelegateImportService {
                 }
 
                 ConferenceDelegate delegate = new ConferenceDelegate();
-                delegate.setName(record.get("Name").trim());
+                String name = record.get("Name").trim();
+                delegate.setName(name.isEmpty() ? null : name);
                 delegate.setCompanyName(record.get("Company Name").trim());
                 delegate.setDesignation(record.get("Designation").trim());
                 delegate.setMobileNumber(record.get("Mobile Number").trim());
@@ -104,10 +105,9 @@ public class DelegateImportService {
         String mobileNumber = record.get("Mobile Number");
         String email = record.get("Email");
 
-        if (name == null || name.isBlank()) {
-            return "Name is required.";
-        }
-        if (name.length() > 150) {
+        // Name is intentionally optional here — a blank name no longer rejects the row; Crew
+        // fills it in later via the edit action. Only enforce the length limit when present.
+        if (name != null && name.length() > 150) {
             return "Name must be at most 150 characters.";
         }
         if (companyName == null || companyName.isBlank()) {

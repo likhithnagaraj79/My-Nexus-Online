@@ -50,7 +50,8 @@ class DelegateImportServiceTest {
     }
 
     @Test
-    void reportsInvalidRowsButStillImportsValidOnes() {
+    @SuppressWarnings("unchecked")
+    void importsRowsWithBlankNameButStillReportsOtherInvalidRows() {
         String csv = "Name,Company Name,Designation,Mobile Number,Email\n"
                 + "Alice,Acme Corp,Manager,9876543210,alice@example.com\n"
                 + ",Acme Corp,Engineer,9876543211,bob@example.com\n"
@@ -58,12 +59,16 @@ class DelegateImportServiceTest {
 
         var summary = service.importCsv(csvFile(csv));
 
-        assertThat(summary.importedCount()).isEqualTo(1);
-        assertThat(summary.errors()).hasSize(2);
-        assertThat(summary.errors().get(0).rowNumber()).isEqualTo(3);
-        assertThat(summary.errors().get(0).reason()).contains("Name is required");
-        assertThat(summary.errors().get(1).rowNumber()).isEqualTo(4);
-        assertThat(summary.errors().get(1).reason()).contains("valid email");
+        // The blank-name row (row 3) is no longer an error — it imports with name=null, ready
+        // for Crew to fill in later via Edit. Only the bad-email row is still rejected.
+        assertThat(summary.importedCount()).isEqualTo(2);
+        assertThat(summary.errors()).hasSize(1);
+        assertThat(summary.errors().get(0).rowNumber()).isEqualTo(4);
+        assertThat(summary.errors().get(0).reason()).contains("valid email");
+
+        ArgumentCaptor<java.util.List<ConferenceDelegate>> captor = ArgumentCaptor.forClass(java.util.List.class);
+        verify(delegateRepository).saveAll(captor.capture());
+        assertThat(captor.getValue()).extracting(ConferenceDelegate::getName).containsExactly("Alice", null);
     }
 
     @Test

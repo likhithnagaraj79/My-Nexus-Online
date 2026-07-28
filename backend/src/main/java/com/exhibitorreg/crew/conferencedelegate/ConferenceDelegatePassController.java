@@ -3,11 +3,15 @@ package com.exhibitorreg.crew.conferencedelegate;
 import com.exhibitorreg.auth.AuthenticatedPrincipal;
 import com.exhibitorreg.crew.conferencedelegate.dto.DelegatePassSummary;
 import com.exhibitorreg.crew.conferencedelegate.dto.PrintDelegatesRequest;
+import com.exhibitorreg.crew.conferencedelegate.dto.UpdateDelegateRequest;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,5 +37,10 @@ public class ConferenceDelegatePassController {
     public List<DelegatePassSummary> print(
             @AuthenticationPrincipal AuthenticatedPrincipal principal, @Valid @RequestBody PrintDelegatesRequest request) {
         return conferenceDelegatePassService.print(principal, request);
+    }
+
+    @PutMapping("/{id}")
+    public DelegatePassSummary update(@PathVariable UUID id, @Valid @RequestBody UpdateDelegateRequest request) {
+        return conferenceDelegatePassService.update(id, request);
     }
 }

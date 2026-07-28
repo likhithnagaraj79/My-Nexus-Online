@@ -78,9 +78,12 @@ export const saveBadgeTemplate = (template: BadgeTemplate) =>
 
 export interface DelegatePassSummary {
   id: string
-  name: string
+  // CSV-imported, unedited rows can have no name — Crew fills it in via Edit.
+  name: string | null
   designation: string
   companyName: string
+  mobileNumber: string
+  email: string
   printed: boolean
   printedAt: string | null
 }
@@ -94,8 +97,19 @@ export interface PrintDelegatesRequest {
   personIds: string[]
 }
 
+export interface UpdateDelegateRequest {
+  name: string
+  companyName: string
+  designation: string
+  mobileNumber: string
+  email: string
+}
+
 export const listDelegatePasses = (params: ListDelegatePassesParams) =>
   apiClient.get<DelegatePassSummary[]>('/api/crew/conference-delegates', { params }).then((r) => r.data)
 
 export const printDelegatePasses = (body: PrintDelegatesRequest) =>
   apiClient.post<DelegatePassSummary[]>('/api/crew/conference-delegates/print', body).then((r) => r.data)
+
+export const updateDelegate = (id: string, body: UpdateDelegateRequest) =>
+  apiClient.put<DelegatePassSummary>(`/api/crew/conference-delegates/${id}`, body).then((r) => r.data)

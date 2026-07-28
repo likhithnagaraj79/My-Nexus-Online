@@ -1,15 +1,18 @@
 package com.exhibitorreg.crew.conferencedelegate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import com.exhibitorreg.auth.AuthenticatedPrincipal;
 import com.exhibitorreg.auth.User;
 import com.exhibitorreg.auth.UserRepository;
 import com.exhibitorreg.auth.UserRole;
+import com.exhibitorreg.common.exception.NotFoundException;
 import com.exhibitorreg.conferencedelegate.ConferenceDelegate;
 import com.exhibitorreg.conferencedelegate.ConferenceDelegateRepository;
 import com.exhibitorreg.crew.conferencedelegate.dto.PrintDelegatesRequest;
+import com.exhibitorreg.crew.conferencedelegate.dto.UpdateDelegateRequest;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -86,5 +89,33 @@ class ConferenceDelegatePassServiceTest {
 
         assertThat(results).hasSize(1);
         assertThat(delegate.isPrinted()).isTrue();
+    }
+
+    @Test
+    void updateFillsInAllFieldsIncludingABlankName() {
+        ConferenceDelegate delegate = delegateWithId();
+        delegate.setName(null); // as CSV import would leave it
+        when(delegateRepository.findById(delegate.getId())).thenReturn(Optional.of(delegate));
+
+        var result = service.update(
+                delegate.getId(),
+                new UpdateDelegateRequest("Bob", "New Co", "Lead", "9998887776", "bob@example.com"));
+
+        assertThat(result.name()).isEqualTo("Bob");
+        assertThat(delegate.getName()).isEqualTo("Bob");
+        assertThat(delegate.getCompanyName()).isEqualTo("New Co");
+        assertThat(delegate.getDesignation()).isEqualTo("Lead");
+        assertThat(delegate.getMobileNumber()).isEqualTo("9998887776");
+        assertThat(delegate.getEmail()).isEqualTo("bob@example.com");
+    }
+
+    @Test
+    void updateThrowsNotFoundForUnknownDelegate() {
+        UUID id = UUID.randomUUID();
+        when(delegateRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.update(
+                        id, new UpdateDelegateRequest("Bob", "New Co", "Lead", "9998887776", "bob@example.com")))
+                .isInstanceOf(NotFoundException.class);
     }
 }
